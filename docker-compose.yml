@@ -1,4 +1,4 @@
-# version: '3.8'
+version: '3.8'
 
 services:
   redis:
@@ -9,6 +9,11 @@ services:
     volumes:
       - redis_data:/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   mongodb:
     image: mongo:7
@@ -19,6 +24,11 @@ services:
     volumes:
       - mongo_data:/data/db
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # server:
   #   build:
@@ -27,26 +37,30 @@ services:
   #   ports:
   #     - "3001:3001"
   #   environment:
-  #     - PORT=3001
-  #     - REDIS_URL=redis://redis:6379
-  #     - MONGODB_URI=mongodb://mongodb:27017/pictionary
-  #     - CLIENT_URL=http://localhost:3000
+  #     PORT: 3001
+  #     REDIS_URL: redis://redis:6379
+  #     MONGODB_URI: mongodb://mongodb:27017/pictionary
+  #     CLIENT_URL: http://localhost:3000
+  #     GAME_MAX_PLAYERS: 4
+  #     GAME_NUM_TEAMS: 2
+  #     GAME_ROUND_DURATION: 120
+  #     GAME_TOTAL_ROUNDS: 8
   #   depends_on:
-  #     - redis
-  #     - mongodb
+  #     redis:
+  #       condition: service_healthy
+  #     mongodb:
+  #       condition: service_started
   #   restart: unless-stopped
-  #   volumes:
-  #     - ./server:/app
-  #     - /app/node_modules
 
   # client:
   #   build:
   #     context: ./client
   #     dockerfile: Dockerfile
+  #     args:
+  #       # Baked into the Vite bundle at build time — must be accessible from browser
+  #       VITE_SERVER_URL: http://localhost:3001
   #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     - VITE_SERVER_URL=http://localhost:3001
+  #     - "3000:80"
   #   depends_on:
   #     - server
   #   restart: unless-stopped

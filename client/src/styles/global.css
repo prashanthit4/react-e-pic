@@ -1,0 +1,170 @@
+/* ─── Reset ─────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, #root { height: 100%; width: 100%; }
+
+/* ─── Design tokens ─────────────────────────────────────────────────────────── */
+:root {
+  --ink:          #1a1a2e;
+  --paper:        #fefae0;
+  --cream:        #fff8e7;
+  --white:        #ffffff;
+
+  --team-0:       #e63946;
+  --team-0-light: #ffb3b8;
+  --team-1:       #457b9d;
+  --team-1-light: #a8dadc;
+  --team-2:       #2a9d8f;
+  --team-2-light: #b2e0db;
+  --team-3:       #6d6875;
+  --team-3-light: #d4c5d9;
+
+  --accent:       #f4a261;
+  --green:        #2a9d8f;
+  --yellow:       #ffbe0b;
+  --red:          #e63946;
+
+  --shadow:       4px 4px 0 var(--ink);
+  --shadow-lg:    6px 6px 0 var(--ink);
+  --shadow-sm:    2px 2px 0 var(--ink);
+
+  --radius:       12px;
+  --radius-sm:    8px;
+  --radius-full:  9999px;
+
+  --font-display: 'Fredoka One', cursive;
+  --font-body:    'Nunito', sans-serif;
+
+  --border:       2.5px solid var(--ink);
+  --border-thin:  1.5px solid var(--ink);
+}
+
+/* ─── Body ──────────────────────────────────────────────────────────────────── */
+body {
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--ink);
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, #c9b99a 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#root { position: relative; z-index: 1; }
+
+/* ─── Base elements ─────────────────────────────────────────────────────────── */
+button { font-family: var(--font-body); cursor: pointer; border: none; outline: none; }
+input, textarea { font-family: var(--font-body); outline: none; }
+
+/* ─── Utility: Buttons ──────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--radius);
+  font-weight: 800;
+  font-size: 1rem;
+  border: var(--border);
+  box-shadow: var(--shadow);
+  transition: transform 0.1s, box-shadow 0.1s;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--ink); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+.btn-primary  { background: var(--accent); color: var(--ink); }
+.btn-success  { background: var(--green); color: white; }
+.btn-danger   { background: var(--red); color: white; }
+.btn-ghost    { background: var(--white); color: var(--ink); }
+.btn-sm       { padding: 8px 16px; font-size: 0.875rem; }
+.btn-lg       { padding: 14px 32px; font-size: 1.1rem; }
+
+/* ─── Utility: Card ─────────────────────────────────────────────────────────── */
+.card {
+  background: var(--white);
+  border: var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+
+/* ─── Utility: Input ────────────────────────────────────────────────────────── */
+.input {
+  width: 100%;
+  padding: 12px 16px;
+  border: var(--border);
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 700;
+  background: var(--cream);
+  color: var(--ink);
+}
+.input:focus { outline: 3px solid var(--accent); outline-offset: 1px; }
+
+/* ─── Utility: Badge ────────────────────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 800;
+  border: 1.5px solid currentColor;
+}
+
+/* ─── Utility: Divider ──────────────────────────────────────────────────────── */
+.divider { width: 2px; height: 28px; background: #e8e8e8; border-radius: 2px; margin: 0 4px; }
+
+/* ─── Animations ────────────────────────────────────────────────────────────── */
+@keyframes bounce-in {
+  0%   { transform: scale(0.5); opacity: 0; }
+  70%  { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes slide-up {
+  from { transform: translateY(16px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.05); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-6px); }
+  40%       { transform: translateX(6px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+@keyframes confetti-fall {
+  to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-bounce-in { animation: bounce-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.animate-slide-up  { animation: slide-up 0.3s ease-out both; }
+.animate-pulse     { animation: pulse 1.5s ease-in-out infinite; }
+.animate-shake     { animation: shake 0.5s ease-in-out; }
+.animate-spin      { animation: spin 1s linear infinite; }
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c9b99a; border-radius: 3px; }
+
+/* ─── Team colour helpers (dynamic index support) ───────────────────────────── */
+.team-color-0 { --team-color: var(--team-0); --team-color-light: var(--team-0-light); }
+.team-color-1 { --team-color: var(--team-1); --team-color-light: var(--team-1-light); }
+.team-color-2 { --team-color: var(--team-2); --team-color-light: var(--team-2-light); }
+.team-color-3 { --team-color: var(--team-3); --team-color-light: var(--team-3-light); }

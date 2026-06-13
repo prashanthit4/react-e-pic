@@ -1,0 +1,48 @@
+.overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.overlay-card {
+  border: 4px solid;
+  border-radius: 20px;
+  box-shadow: 8px 8px 0 var(--ink);
+  padding: 32px 44px;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.overlay-card.correct { background: #d4f7ea; border-color: var(--green); }
+.overlay-card.timeout { background: #ffe8e8; border-color: var(--red); }
+
+.overlay-emoji { font-size: 3.5rem; line-height: 1; }
+
+.overlay-title { font-family: var(--font-display); font-size: 2.2rem; line-height: 1; }
+
+.overlay-sub { font-size: 1rem; font-weight: 600; line-height: 1.7; }
+
+.overlay-word { font-size: 1rem; color: #555; }
+
+.overlay-scores {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  font-weight: 800;
+  font-size: 1rem;
+  flex-wrap: wrap;
+}
+
+.overlay-score-dot { color: #ccc; }
+
+.overlay-next { color: #999; font-size: 0.85rem; font-style: italic; margin-top: 4px; }

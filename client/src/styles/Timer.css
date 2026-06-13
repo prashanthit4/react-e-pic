@@ -1,0 +1,26 @@
+.timer-wrap {
+  background: var(--white);
+  border: 2.5px solid;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 130px;
+  flex-shrink: 0;
+  transition: border-color 0.4s;
+}
+
+.timer-display {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  text-align: center;
+  line-height: 1;
+  transition: color 0.4s;
+}
+
+.timer-display.urgent { animation: pulse 0.6s ease-in-out infinite; }
+
+.timer-track { height: 7px; background: #eee; border-radius: 4px; overflow: hidden; }
+.timer-fill { height: 100%; border-radius: 4px; transition: width 1s linear, background 0.4s; }

@@ -1,0 +1,144 @@
+.waiting-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  gap: 28px;
+}
+
+.waiting-header { text-align: center; display: flex; flex-direction: column; gap: 10px; }
+
+.waiting-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 7vw, 4rem);
+  text-shadow: 4px 4px 0 var(--accent);
+}
+
+.waiting-code-row {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.waiting-code-badge {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  letter-spacing: 4px;
+  background: var(--yellow);
+  padding: 2px 14px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--ink);
+}
+
+.waiting-count { color: #888; font-weight: 600; font-size: 0.9rem; }
+
+.waiting-teams {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.waiting-team-card {
+  background: var(--white);
+  border: 3px solid;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  min-width: 200px;
+}
+
+.waiting-team-header {
+  padding: 10px 18px;
+  color: white;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+}
+
+.waiting-slot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px;
+  border-radius: 10px;
+  padding: 12px 14px;
+  transition: all 0.3s;
+}
+
+.waiting-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+}
+
+.waiting-player-name  { font-weight: 800; font-size: 0.95rem; }
+.waiting-player-role  { font-size: 0.72rem; color: #666; }
+
+.waiting-empty-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px dashed #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ccc;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.waiting-empty-label { color: #bbb; font-style: italic; font-weight: 600; font-size: 0.9rem; }
+
+.waiting-status {
+  background: var(--white);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 12px 24px;
+  font-weight: 700;
+  color: #555;
+}
+
+.waiting-starting {
+  background: var(--green);
+  color: white;
+  padding: 14px 28px;
+  border-radius: var(--radius);
+  border: 2.5px solid var(--ink);
+  box-shadow: var(--shadow);
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+}
+
+.waiting-rules {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.waiting-rule-chip {
+  background: var(--white);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}

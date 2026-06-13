@@ -1,203 +1,112 @@
-# 🎨 Pictionary — Multiplayer Draw & Guess
+# 🎨 react-e-pic — TypeScript Multiplayer Game
 
-A real-time 4-player Pictionary game built with **React + Node.js + Socket.io + Redis + MongoDB**.
-
----
-
-## 🏗️ Architecture
-
-```
-┌─────────────────────────────────────────────────────┐
-│                   CLIENT (React + Vite)              │
-│  Lobby → WaitingRoom → GameBoard                    │
-│  DrawingCanvas · Chat · Scoreboard · Timer          │
-└─────────────────────┬───────────────────────────────┘
-                      │ Socket.io + REST
-┌─────────────────────▼───────────────────────────────┐
-│              SERVER (Node.js + Express)              │
-│  Socket.io events · Game state machine              │
-│  Timer management · Round resolution logic          │
-└──────────────┬──────────────────┬───────────────────┘
-               │                  │
-┌──────────────▼───┐  ┌───────────▼──────────────────┐
-│  Redis (Primary) │  │  MongoDB (Persistent)         │
-│  Game state      │  │  Game history, final scores   │
-│  TTL: 1 hour     │  │  Player names, round data     │
-└──────────────────┘  └──────────────────────────────┘
-```
-
-## 👥 Team Structure
-
-| Player | Index | Team |
-|--------|-------|------|
-| P1     | 0     | 🔴 Team Red  |
-| P2     | 1     | 🔴 Team Red  |
-| P3     | 2     | 🔵 Team Blue |
-| P4     | 3     | 🔵 Team Blue |
-
-**Turn order:** P1 → P3 → P2 → P4 → (repeat) = 8 rounds total
-
-**Scoring:** Only the artist's teammate earns a point on correct guess. Opponents cannot score.
+Real-time 4-player (configurable) Pictionary built with **React 19 + TypeScript + Node.js + Socket.io + Redis + MongoDB**.
 
 ---
 
-## 🚀 Quick Start
+## Quick Start (manual — recommended for dev)
 
-### Option A — Docker Compose (recommended)
+### 1. Start databases
 
 ```bash
-# Start everything
-docker-compose up --build
+# Redis
+docker run -d -p 6379:6379 redis:7-alpine
 
-# Open your browser to:
-# http://localhost:3000
+# MongoDB (optional — game history only)
+docker run -d -p 27017:27017 mongo:7
 ```
 
-### Option B — Manual Setup
-
-**Prerequisites:** Node.js 18+, Redis, MongoDB
+### 2. Server
 
 ```bash
-# 1. Start Redis and MongoDB
-redis-server &
-mongod --dbpath /tmp/mongo &
-
-# 2. Start the server
 cd server
-cp .env.example .env
+cp .env.example .env    # edit game settings here
 npm install
-npm start
+npm run dev             # ts-node-dev hot-reload on :3001
+```
 
-# 3. Start the client (new terminal)
+### 3. Client
+
+```bash
 cd client
 npm install
-npm run dev
+npm run dev             # Vite dev server on :3000
 ```
 
-Open **http://localhost:3000** in 4 different tabs/browsers.
+Open **http://localhost:3000** in 4 browser tabs. Create in tab 1, join with the code in tabs 2–4.
 
 ---
 
-## 🎮 How to Play
+## Docker Compose (all-in-one)
 
-1. **Player 1** clicks **Create Game** → shares the 8-character game code
-2. **Players 2, 3, 4** click **Join Game** and enter the code
-3. Game auto-starts when all 4 players have joined
-4. Each round:
-   - The **Artist** sees a secret word — draw it!
-   - The Artist's **Teammate** types guesses in the chat
-   - **Correct guess** = +1 point for the team
-   - **Timer hits 0** = no points, word revealed
-5. After 8 rounds (2 per player), the team with more points wins!
+```bash
+docker-compose up --build
+```
+
+Client → http://localhost:3000 · Server → http://localhost:3001
 
 ---
 
-## 🔌 Socket.io Events
+## Configuring the game (server/.env)
 
-### Client → Server
-| Event | Payload | Description |
-|-------|---------|-------------|
-| `game:join` | `{ gameId, playerName }` | Join a game room |
-| `game:reconnect` | `{ gameId, playerIndex }` | Reconnect to active game |
-| `chat:send` | `{ text }` | Send a chat message or guess |
-| `draw:start` | `{ x, y, color, size, tool }` | Start drawing stroke |
-| `draw:move` | `{ from, to, color, size, eraser }` | Drawing coordinates |
-| `draw:end` | `{}` | End drawing stroke |
-| `draw:clear` | `{}` | Clear the canvas |
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `GAME_MAX_PLAYERS` | `4` | Total players per game (must be even) |
+| `GAME_NUM_TEAMS` | `2` | Number of teams |
+| `GAME_ROUND_DURATION` | `120` | Seconds per round |
+| `GAME_TOTAL_ROUNDS` | `8` | Rounds before game ends |
 
-### Server → Client
-| Event | Payload | Description |
-|-------|---------|-------------|
-| `game:state` | Full game state | Updated game state (word hidden from non-artists) |
-| `game:started` | `{}` | Game begins |
-| `game:finished` | `{ scores, players }` | Game over |
-| `timer:tick` | `{ remaining }` | Countdown every second |
-| `chat:message` | Message object | Chat or system message |
-| `round:correct` | `{ word, guessedBy, scoringTeam, scores }` | Correct guess event |
-| `round:timeout` | `{ word }` | Round timer expired |
-| `draw:move` | Drawing data | Broadcast drawing to non-artist players |
-| `draw:clear` | `{}` | Broadcast canvas clear |
+Examples:
+- **6 players / 2 teams** → `GAME_MAX_PLAYERS=6 GAME_NUM_TEAMS=2`
+- **6 players / 3 teams** → `GAME_MAX_PLAYERS=6 GAME_NUM_TEAMS=3`
+- **Quick game** → `GAME_TOTAL_ROUNDS=4 GAME_ROUND_DURATION=60`
 
 ---
 
-## 📁 Project Structure
+## Project structure
 
 ```
-pictionary/
+react-e-pic/
 ├── docker-compose.yml
-├── server/
-│   ├── index.js          # Express + Socket.io server
-│   ├── gameState.js      # Redis-backed game state manager
-│   ├── models.js         # MongoDB schemas (Game, Round)
-│   ├── constants.js      # Word bank, round duration, turn order
-│   └── .env.example
-└── client/
-    ├── vite.config.js
-    └── src/
-        ├── App.jsx
-        ├── context/
-        │   ├── SocketContext.jsx   # Socket.io connection
-        │   └── GameContext.jsx     # Game state + dispatch
-        └── components/
-            ├── Lobby.jsx           # Create/join screen
-            ├── WaitingRoom.jsx     # Players joining
-            ├── GameBoard.jsx       # Main game screen
-            ├── DrawingCanvas.jsx   # Canvas + drawing tools
-            ├── Chat.jsx            # Chat + guess evaluation
-            ├── Scoreboard.jsx      # Live scores + players
-            ├── Timer.jsx           # Countdown timer
-            ├── RoundOverlay.jsx    # Correct/timeout overlay
-            └── GameOver.jsx        # Final results + confetti
+├── server/                    # Node.js + Express + Socket.io
+│   ├── src/
+│   │   ├── index.ts           # Server entry, all Socket.io handlers
+│   │   ├── config.ts          # Env vars + TURN_ORDER builder
+│   │   ├── types/index.ts     # All shared TypeScript interfaces
+│   │   ├── game/
+│   │   │   ├── GameStateManager.ts  # Redis state machine
+│   │   │   └── words.ts             # Word bank
+│   │   └── models/Game.ts     # Mongoose schema
+│   ├── .env                   # Local config (gitignored)
+│   └── package.json           # npm run dev → ts-node-dev
+│
+└── client/                    # React 19 + TypeScript + Vite
+    ├── src/
+    │   ├── main.tsx            # createRoot entry
+    │   ├── App.tsx             # Screen router
+    │   ├── types/index.ts      # Client-side TypeScript types
+    │   ├── styles/             # One CSS file per component
+    │   ├── context/
+    │   │   ├── SocketContext.tsx
+    │   │   └── GameContext.tsx
+    │   └── components/
+    │       ├── ui/             # Button, Input, Card, TeamBadge, PlayerSlot
+    │       ├── canvas/         # DrawingCanvas
+    │       ├── chat/           # Chat
+    │       ├── game/           # GameBoard, Scoreboard, Timer
+    │       ├── lobby/          # Lobby, WaitingRoom
+    │       └── overlay/        # RoundOverlay, GameOver
+    └── package.json
 ```
 
 ---
 
-## ⚙️ Environment Variables
+## React 19 features used
 
-### Server (`server/.env`)
-```
-PORT=3001
-REDIS_URL=redis://localhost:6379
-MONGODB_URI=mongodb://localhost:27017/pictionary
-CLIENT_URL=http://localhost:3000
-```
+- `createRoot` (stable in React 19)
+- `use` context via `createContext` with the new direct `<Context value={...}>` syntax (no `.Provider`)
+- `useMemo` for confetti piece generation
+- `useReducer` for all game state with discriminated union actions
+- Strict Mode enabled in `main.tsx`
 
-### Client (Vite auto-proxies `/api` and `/socket.io` to server)
-```
-VITE_SERVER_URL=         # Leave empty for proxy, or set to http://server:3001
-```
-
----
-
-## 🎨 Drawing Tools
-
-- **8 colors** including black, red, blue, teal, orange, yellow, purple, white
-- **4 brush sizes**: fine (3px), medium (6px), large (12px), jumbo (20px)  
-- **Eraser tool**: double-width eraser
-- **Clear canvas**: wipes everything for all players
-
----
-
-## 🔧 Redis Fallback
-
-The server includes an **in-memory fallback** if Redis is unavailable. This works for single-server development but won't persist across restarts. For production, always use Redis.
-
----
-
-## 📊 MongoDB Schema
-
-```javascript
-Game {
-  gameId: String,          // 8-char code
-  players: [{
-    name, teamId, playerIndex, socketId
-  }],
-  rounds: [{
-    roundNumber, artistIndex, word,
-    guessedBy, teamScored, duration
-  }],
-  finalScores: { team0, team1 },
-  status: 'waiting' | 'playing' | 'finished',
-  startedAt, endedAt, createdAt
-}
-```
+AI Assisted development(Claude)
